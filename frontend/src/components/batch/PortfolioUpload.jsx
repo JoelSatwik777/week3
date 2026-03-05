@@ -7,6 +7,7 @@ import ChurnByGeographyChart from './ChurnByGeographyChart';
 import ChurnByNumOfProductsChart from './ChurnByNumOfProductsChart';
 import PortfolioSummaryCard from './PortfolioSummaryCard';
 import RiskDistributionChart from './RiskDistributionChart';
+import PortfolioAISummary from './PortfolioAISummary';
 
 const allowedExtensions = ['.csv', '.xlsx', '.xls'];
 
@@ -142,19 +143,7 @@ function PortfolioUpload() {
                 <span className="advisory-icon">🤖</span>
                 <h3>Portfolio AI Summary Report</h3>
               </div>
-              <div className="ai-summary-content">
-                {result.portfolio_ai_summary_report.split('\n').map((line, index) => {
-                  const trimmed = line.trim();
-                  if (!trimmed) return null;
-                  if (trimmed.startsWith('**') && trimmed.endsWith('**')) {
-                    return <h4 key={index} className="summary-section">{trimmed.slice(2, -2)}</h4>;
-                  }
-                  if (trimmed.startsWith('- ')) {
-                    return <li key={index} className="summary-bullet">{trimmed.slice(2)}</li>;
-                  }
-                  return <p key={index}>{trimmed}</p>;
-                })}
-              </div>
+              <PortfolioAISummary report={result.portfolio_ai_summary_report} />
             </div>
           ) : null}
 
