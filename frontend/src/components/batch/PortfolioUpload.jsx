@@ -138,8 +138,15 @@ function PortfolioUpload() {
 
           {result.portfolio_ai_summary_report ? (
             <div className="ai-summary-panel">
-              <h3>Portfolio AI Summary</h3>
-              <p>{result.portfolio_ai_summary_report}</p>
+              <div className="panel-header">
+                <span className="advisory-icon">🤖</span>
+                <h3>Portfolio AI Summary Report</h3>
+              </div>
+              <div className="ai-summary-content">
+                {result.portfolio_ai_summary_report.split('\n').map((line, index) => (
+                  <p key={index}>{line}</p>
+                ))}
+              </div>
             </div>
           ) : null}
 

@@ -470,12 +470,32 @@ select {
 .ai-summary-panel {
   border: 1px solid var(--border);
   border-radius: 12px;
-  padding: 12px;
+  padding: 16px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
 }
 
-.ai-summary-panel p {
-  margin-top: 8px;
-  line-height: 1.5;
+.panel-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.panel-header h3 {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  color: var(--text-primary);
+}
+
+.ai-summary-content p {
+  margin: 0 0 8px 0;
+  line-height: 1.6;
+  color: var(--text-primary);
+}
+
+.ai-summary-content p:last-child {
+  margin-bottom: 0;
 }
 
 .charts-grid {
