@@ -1,0 +1,34 @@
+Frontend responsibility:
+    Collect user input
+    Send JSON
+
+Backend responsibility:
+    Load ML model
+    Preprocess data
+    Predict
+    Return result
+
+LLM responsibility:
+    Explain prediction
+    Suggest retention strategy
+
+Database responsibility:
+    Store prediction history
+
+
+
+After Backend Implementation, Achieved the following:
+        Raw JSON → Pydantic validation → DataFrame →
+        Preprocessing (OneHotEncoder) →
+        Logistic Regression →
+        Probability →
+        Risk classification →
+        JSON response
+
+After front-end Implementation:
+        ✅ Controlled form
+        ✅ Dynamic numeric handling
+        ✅ Loading state
+        ✅ Color-coded risk
+        ✅ Clean UI layout
+        ✅ Real-time backend integration
