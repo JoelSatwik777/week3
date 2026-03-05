@@ -1,6 +1,10 @@
 import { useRef, useState } from 'react';
 
 import { getDownloadUrl, predictPortfolio } from '../../api/client';
+import ChurnByAgeGroupChart from './ChurnByAgeGroupChart';
+import ChurnByCreditScoreBandChart from './ChurnByCreditScoreBandChart';
+import ChurnByGeographyChart from './ChurnByGeographyChart';
+import ChurnByNumOfProductsChart from './ChurnByNumOfProductsChart';
 import PortfolioSummaryCard from './PortfolioSummaryCard';
 import RiskDistributionChart from './RiskDistributionChart';
 
@@ -124,7 +128,13 @@ function PortfolioUpload() {
       {result ? (
         <article className="card analytics-card">
           <PortfolioSummaryCard summary={result.summary} />
-          <RiskDistributionChart summary={result.summary} />
+          <div className="charts-grid">
+            <RiskDistributionChart summary={result.summary} />
+            <ChurnByGeographyChart data={result.analytics.churn_by_geography} />
+            <ChurnByAgeGroupChart data={result.analytics.churn_by_age_group} />
+            <ChurnByNumOfProductsChart data={result.analytics.churn_by_num_of_products} />
+            <ChurnByCreditScoreBandChart data={result.analytics.churn_by_credit_score_band} />
+          </div>
 
           {result.portfolio_ai_summary_report ? (
             <div className="ai-summary-panel">
