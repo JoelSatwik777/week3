@@ -41,9 +41,14 @@ def _build_single_prompt(customer_data: dict, churn_probability: float, risk_lev
 def _build_portfolio_prompt(summary: dict) -> str:
     return (
         'You are a portfolio retention strategist. '
-        'Summarize this portfolio in short plain-text bullets using this structure:\n'
-        'Portfolio Snapshot:\n- ...\n- ...\n'
-        'Top Priorities:\n- ...\n- ...\n- ...\n\n'
+        'Summarize this portfolio in short plain-text with markdown formatting:\n\n'
+        '**Portfolio Snapshot**\n'
+        '- Key metric 1\n'
+        '- Key metric 2\n\n'
+        '**Top Priorities**\n'
+        '- Priority 1\n'
+        '- Priority 2\n'
+        '- Priority 3\n\n'
         f'Portfolio summary: {json.dumps(summary)}\n'
     )
 

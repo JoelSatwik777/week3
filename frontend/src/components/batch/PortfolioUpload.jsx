@@ -143,9 +143,17 @@ function PortfolioUpload() {
                 <h3>Portfolio AI Summary Report</h3>
               </div>
               <div className="ai-summary-content">
-                {result.portfolio_ai_summary_report.split('\n').map((line, index) => (
-                  <p key={index}>{line}</p>
-                ))}
+                {result.portfolio_ai_summary_report.split('\n').map((line, index) => {
+                  const trimmed = line.trim();
+                  if (!trimmed) return null;
+                  if (trimmed.startsWith('**') && trimmed.endsWith('**')) {
+                    return <h4 key={index} className="summary-section">{trimmed.slice(2, -2)}</h4>;
+                  }
+                  if (trimmed.startsWith('- ')) {
+                    return <li key={index} className="summary-bullet">{trimmed.slice(2)}</li>;
+                  }
+                  return <p key={index}>{trimmed}</p>;
+                })}
               </div>
             </div>
           ) : null}
