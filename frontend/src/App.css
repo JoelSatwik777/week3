@@ -505,12 +505,12 @@ select {
 .ai-summary-report {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 20px;
 }
 
 .ai-summary-section {
   border-top: 1px solid var(--border);
-  padding-top: 12px;
+  padding-top: 16px;
 }
 
 .ai-summary-section:first-child {
@@ -518,11 +518,28 @@ select {
   padding-top: 0;
 }
 
+.summary-section-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg-secondary);
+  padding: 4px 8px;
+  border-radius: 8px;
+}
+
+.section-icon {
+  font-size: 1.2rem;
+}
+
 .summary-section-title {
   font-family: var(--font-display);
   font-size: 1.1rem;
   color: var(--accent-strong);
-  margin: 0 0 8px 0;
+  margin: 0;
+}
+
+.summary-section-content {
+  margin-top: 8px;
 }
 
 .summary-section-content p {
@@ -536,7 +553,7 @@ select {
 }
 
 .summary-section-content li {
-  margin: 0 0 4px 0;
+  margin: 0 0 6px 0;
   line-height: 1.5;
   color: var(--text-primary);
   list-style-type: disc;

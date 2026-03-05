@@ -27,10 +27,13 @@ function PortfolioAISummary({ report }) {
     <div className="ai-summary-report">
       {sections.map((sec, idx) => (
         <div key={idx} className="ai-summary-section">
-          <h4 className="summary-section-title">{sec.title}</h4>
+          <div className="summary-section-header">
+            <span className="section-icon">📌</span>
+            <h4 className="summary-section-title">{sec.title}</h4>
+          </div>
           <div className="summary-section-content">
             {sec.items.some((it) => it.type === 'bullet') ? (
-              <ul>
+              <ul className="summary-list">
                 {sec.items.map((it, iidx) =>
                   it.type === 'bullet' ? (
                     <li key={iidx} className="summary-bullet">
