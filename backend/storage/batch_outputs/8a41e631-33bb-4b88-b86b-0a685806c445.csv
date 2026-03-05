@@ -1,0 +1,3 @@
+CreditScore,Geography,Gender,Age,Tenure,Balance,NumOfProducts,HasCrCard,IsActiveMember,EstimatedSalary,churn_probability,risk_level,retention_suggestions
+620,Germany,Female,39,4,112000,2,1,1,87000,0.205,Low,Assign a relationship manager for proactive high-value account outreach.
+480,France,Male,54,1,140000,1,1,0,56000,0.765,High,Launch a personalized digital engagement campaign in the next 7 days. | Bundle one additional product with loyalty pricing to improve relationship depth. | Assign a relationship manager for proactive high-value account outreach. | Offer onboarding retention benefits and milestone rewards for early tenure. | Trigger immediate churn-prevention workflow with outbound call escalation.

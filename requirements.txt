@@ -1,7 +1,9 @@
 fastapi
-pydantic
-requests
 uvicorn
+pydantic
+python-multipart
+requests
 pandas
+openpyxl
 joblib
 scikit-learn
