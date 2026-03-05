@@ -17,7 +17,7 @@ function ChurnByAgeGroupChart({ data }) {
           <XAxis dataKey="ageGroup" />
           <YAxis label={{ value: 'Churn Rate (%)', angle: -90, position: 'insideLeft' }} />
           <Tooltip formatter={(value) => [`${value.toFixed(2)}%`, 'Churn Rate']} />
-          <Bar dataKey="churnRate" fill="var(--primary-color)" />
+          <Bar dataKey="churnRate" fill="var(--accent)" />
         </BarChart>
       </ResponsiveContainer>
     </div>
