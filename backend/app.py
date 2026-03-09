@@ -52,3 +52,6 @@ def create_app() -> FastAPI:
         return JSONResponse(status_code=500, content={'detail': 'Internal server error.'})
 
     return app
+
+
+app = create_app()

@@ -9,6 +9,7 @@ class PredictResponse(BaseModel):
     risk_level: str
     retention_suggestions: List[str]
     ai_advisory_report: str
+    session_id: Optional[str] = None
 
 
 class BatchSummary(BaseModel):
@@ -88,3 +89,12 @@ class RetentionMessageRequest(BaseModel):
 
 class RetentionMessageResponse(BaseModel):
     retention_message: str
+
+
+class FollowUpRequest(BaseModel):
+    session_id: str
+    question: str
+
+
+class FollowUpResponse(BaseModel):
+    advisory: str

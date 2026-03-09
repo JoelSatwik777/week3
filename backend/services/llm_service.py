@@ -234,3 +234,22 @@ def build_retention_message(
     if response:
         return response
     return 'Retention message unavailable: Ollama is offline or timed out.'
+
+
+def _build_follow_up_prompt(history: list[dict], question: str) -> str:
+    history_text = "\n".join([f"{'User' if msg['type'] == 'user' else 'AI'}: {msg['text']}" for msg in history])
+    return (
+        "You are a banking retention advisor continuing a conversation. "
+        "Use the conversation history below as context. Answer the user's new question directly and helpfully. "
+        "Keep responses concise, in plain text, and focused on churn risk and retention.\n\n"
+        f"Conversation History:\n{history_text}\n\n"
+        f"User's New Question: {question}\n"
+    )
+
+
+def build_follow_up_advisory(history: list[dict], question: str) -> str:
+    prompt = _build_follow_up_prompt(history, question)
+    response = _call_ollama(prompt, normalize=False)  # Allow free-form for follow-ups
+    if response:
+        return response
+    return 'Follow-up advisory unavailable: Ollama is offline or timed out.'

@@ -1,12 +1,15 @@
 from __future__ import annotations
 from fastapi import APIRouter, File, Form, UploadFile
 from fastapi.responses import FileResponse
+import uuid
 
 from backend.schemas.customer import CustomerInput
 from backend.schemas.prediction import (
     BatchPredictResponse,
     ExecutiveSummaryRequest,
     ExecutiveSummaryResponse,
+    FollowUpRequest,
+    FollowUpResponse,
     PortfolioAISummaryRequest,
     PortfolioAISummaryResponse,
     PredictResponse,
@@ -21,6 +24,7 @@ from backend.services.file_processing_service import (
 )
 from backend.services.llm_service import (
     build_executive_summary,
+    build_follow_up_advisory,
     build_portfolio_report,
     build_retention_message,
     build_single_customer_report,
@@ -28,6 +32,9 @@ from backend.services.llm_service import (
 from backend.services.prediction_service import apply_batch_predictions, predict_single_customer
 
 router = APIRouter(tags=['predictions'])
+
+# In-memory storage for conversations (session_id -> list of messages)
+conversations: dict[str, list[dict]] = {}
 
 
 @router.post('/predict', response_model=PredictResponse)
@@ -41,12 +48,19 @@ def predict_customer(customer: CustomerInput):
         prediction['retention_suggestions'],
     )
 
+    # Generate session ID and store initial conversation
+    session_id = str(uuid.uuid4())
+    conversations[session_id] = [
+        {'type': 'ai', 'text': ai_report}
+    ]
+
     return PredictResponse(
         churn_probability=prediction['churn_probability'],
         confidence=prediction['confidence'],
         risk_level=prediction['risk_level'],
         retention_suggestions=prediction['retention_suggestions'],
         ai_advisory_report=ai_report,
+        session_id=session_id,
     )
 
 
@@ -129,3 +143,27 @@ def download_processed_file(file_id: str):
         media_type='text/csv',
         filename=f'processed_churn_predictions_{file_id}.csv',
     )
+
+
+@router.post('/follow-up', response_model=FollowUpResponse)
+def follow_up_question(payload: FollowUpRequest):
+    session_id = payload.session_id
+    question = payload.question
+
+    if session_id not in conversations:
+        return FollowUpResponse(advisory="Invalid session. Please start a new prediction.")
+
+    history = conversations[session_id]
+    if len(history) >= 10:  # Limit to 10 messages total (5 user + 5 ai)
+        return FollowUpResponse(advisory="Conversation limit reached. Please start a new prediction.")
+
+    # Add user question to history
+    history.append({'type': 'user', 'text': question})
+
+    # Generate AI response
+    advisory = build_follow_up_advisory(history, question)
+
+    # Add AI response to history
+    history.append({'type': 'ai', 'text': advisory})
+
+    return FollowUpResponse(advisory=advisory)

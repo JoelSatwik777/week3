@@ -71,6 +71,15 @@ export async function fetchRetentionMessage(customer, result) {
   return handleResponse(response);
 }
 
+export async function predictFollowUp(sessionId, question) {
+  const response = await fetch(`${API_BASE_URL}/follow-up`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ session_id: sessionId, question }),
+  });
+  return handleResponse(response);
+}
+
 export function getDownloadUrl(relativeUrl) {
   if (!relativeUrl) return '';
   if (relativeUrl.startsWith('http')) return relativeUrl;

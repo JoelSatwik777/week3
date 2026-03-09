@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { fetchRetentionMessage } from '../../api/client';
+import { fetchRetentionMessage, predictFollowUp } from '../../api/client';
 
 function riskClass(riskLevel) {
   if (riskLevel === 'High') return 'risk-badge high';
@@ -51,6 +51,11 @@ function SingleResultCard({ result, lastSubmittedCustomer }) {
   const [retentionLoading, setRetentionLoading] = useState(false);
   const [retentionError, setRetentionError] = useState('');
 
+  // Follow-up conversation state
+  const [conversation, setConversation] = useState([]);
+  const [followUpQuestion, setFollowUpQuestion] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
   const handleGenerateRetentionMessage = async () => {
     if (!result || !lastSubmittedCustomer) return;
     setRetentionError('');
@@ -63,6 +68,26 @@ function SingleResultCard({ result, lastSubmittedCustomer }) {
       setRetentionError(err.message || 'Failed to generate message.');
     } finally {
       setRetentionLoading(false);
+    }
+  };
+
+  const handleFollowUp = async () => {
+    if (!followUpQuestion.trim() || conversation.length >= 10 || !result.session_id) return;
+
+    const userMessage = { type: 'user', text: followUpQuestion, timestamp: new Date() };
+    setConversation(prev => [...prev, userMessage]);
+    setFollowUpQuestion('');
+    setIsLoading(true);
+
+    try {
+      const response = await predictFollowUp(result.session_id, followUpQuestion);
+      const aiMessage = { type: 'ai', text: response.advisory, timestamp: new Date() };
+      setConversation(prev => [...prev, aiMessage]);
+    } catch (error) {
+      const errorMessage = { type: 'ai', text: 'Sorry, I couldn\'t generate a response. Please try again.', timestamp: new Date() };
+      setConversation(prev => [...prev, errorMessage]);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -100,6 +125,35 @@ function SingleResultCard({ result, lastSubmittedCustomer }) {
           <h3>AI Advisory Report</h3>
           {renderAdvisory(result.ai_advisory_report)}
         </article>
+      </div>
+
+      {/* Follow-Up Section */}
+      <div className="follow-up-section">
+        <h3>Follow-Up Questions</h3>
+        <div className="conversation-history">
+          {conversation.map((msg, index) => (
+            <div key={index} className={`message ${msg.type}`}>
+              <strong>{msg.type === 'user' ? 'You' : 'AI'}:</strong> {msg.text}
+              <small>({msg.timestamp.toLocaleTimeString()})</small>
+            </div>
+          ))}
+          {isLoading && <div className="message ai">AI is thinking...</div>}
+        </div>
+        {conversation.length < 10 && result.session_id && (
+          <div className="follow-up-input">
+            <input
+              type="text"
+              value={followUpQuestion}
+              onChange={(e) => setFollowUpQuestion(e.target.value)}
+              placeholder="Ask a follow-up question..."
+              disabled={isLoading}
+            />
+            <button onClick={handleFollowUp} disabled={isLoading || !followUpQuestion.trim()}>
+              Ask
+            </button>
+          </div>
+        )}
+        {conversation.length >= 10 && <p>Conversation limit reached (10 messages).</p>}
       </div>
 
       <div className="retention-message-section">
