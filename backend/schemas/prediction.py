@@ -58,3 +58,33 @@ class BatchPredictResponse(BaseModel):
     download_file_id: str
     download_url: str
     portfolio_ai_summary_report: Optional[str] = None
+
+
+class PortfolioAISummaryRequest(BaseModel):
+    """Payload for requesting portfolio AI summary separately (so batch results can show first)."""
+    summary: BatchSummary
+    analytics: BatchAnalytics
+
+
+class PortfolioAISummaryResponse(BaseModel):
+    portfolio_ai_summary_report: str
+
+
+class ExecutiveSummaryRequest(BaseModel):
+    summary: BatchSummary
+    analytics: BatchAnalytics
+
+
+class ExecutiveSummaryResponse(BaseModel):
+    executive_summary: str
+
+
+class RetentionMessageRequest(BaseModel):
+    customer: dict  # same shape as CustomerInput
+    churn_probability: float
+    risk_level: str
+    retention_suggestions: List[str]
+
+
+class RetentionMessageResponse(BaseModel):
+    retention_message: str

@@ -36,6 +36,41 @@ export async function predictPortfolio(file, includeAISummary = false) {
   return handleResponse(response);
 }
 
+/** Request portfolio AI summary separately so batch charts can show first. */
+export async function fetchPortfolioAISummary(summary, analytics) {
+  const response = await fetch(`${API_BASE_URL}/predict-batch/portfolio-ai-summary`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ summary, analytics }),
+  });
+  return handleResponse(response);
+}
+
+/** Generate executive summary for batch results (for leadership). */
+export async function fetchExecutiveSummary(summary, analytics) {
+  const response = await fetch(`${API_BASE_URL}/predict-batch/executive-summary`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ summary, analytics }),
+  });
+  return handleResponse(response);
+}
+
+/** Generate personalised retention message (email/SMS) for a single customer. */
+export async function fetchRetentionMessage(customer, result) {
+  const response = await fetch(`${API_BASE_URL}/retention-message`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      customer,
+      churn_probability: result.churn_probability,
+      risk_level: result.risk_level,
+      retention_suggestions: result.retention_suggestions || [],
+    }),
+  });
+  return handleResponse(response);
+}
+
 export function getDownloadUrl(relativeUrl) {
   if (!relativeUrl) return '';
   if (relativeUrl.startsWith('http')) return relativeUrl;

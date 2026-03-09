@@ -44,7 +44,7 @@ function SinglePredictionForm({ onResult, onError, loading, setLoading }) {
     );
     setValues(empty);
     setErrors({});
-    onResult(null);
+    onResult(null, null);
     onError('');
   };
 
@@ -62,9 +62,9 @@ function SinglePredictionForm({ onResult, onError, loading, setLoading }) {
     setLoading(true);
     try {
       const response = await predictSingleCustomer(values);
-      onResult(response);
+      onResult(response, values);
     } catch (error) {
-      onResult(null);
+      onResult(null, null);
       onError(error.message || 'Prediction failed.');
     } finally {
       setLoading(false);
@@ -77,43 +77,53 @@ function SinglePredictionForm({ onResult, onError, loading, setLoading }) {
         <h2>Single Customer Assessment</h2>
         {loading ? <span className="spinner" aria-label="Loading" /> : null}
       </div>
-      <div className="form-grid">
-        {singleFormFields.map((field) => (
-          <label key={field.key} className="field">
-            <span>{field.label}</span>
-            {field.type === 'select' ? (
-              <select
-                value={values[field.key]}
-                onChange={(event) => updateField(field.key, toNumber(event.target.value))}
-              >
-                <option value="">Select</option>
-                {field.options.map((option) => {
-                  if (typeof option === 'string') {
+      <div className="form-grid single-grid">
+        {singleFormFields.map((field) => {
+          const hasDescription = Boolean(field.description);
+          return (
+            <label
+              key={field.key}
+              className="field"
+              title={hasDescription ? field.description : undefined}
+            >
+              <span className={hasDescription ? 'field-label has-help' : 'field-label'}>
+                {field.label}
+                {hasDescription ? <span className="field-help-icon">?</span> : null}
+              </span>
+              {field.type === 'select' ? (
+                <select
+                  value={values[field.key]}
+                  onChange={(event) => updateField(field.key, toNumber(event.target.value))}
+                >
+                  <option value="">Select</option>
+                  {field.options.map((option) => {
+                    if (typeof option === 'string') {
+                      return (
+                        <option key={option} value={option}>
+                          {option}
+                        </option>
+                      );
+                    }
                     return (
-                      <option key={option} value={option}>
-                        {option}
+                      <option key={`${field.key}-${option.value}`} value={option.value}>
+                        {option.label}
                       </option>
                     );
-                  }
-                  return (
-                    <option key={`${field.key}-${option.value}`} value={option.value}>
-                      {option.label}
-                    </option>
-                  );
-                })}
-              </select>
-            ) : (
-              <input
-                type="number"
-                min={field.min}
-                max={field.max}
-                value={values[field.key]}
-                onChange={(event) => updateField(field.key, toNumber(event.target.value))}
-              />
-            )}
-            {errors[field.key] ? <small className="field-error">{errors[field.key]}</small> : null}
-          </label>
-        ))}
+                  })}
+                </select>
+              ) : (
+                <input
+                  type="number"
+                  min={field.min}
+                  max={field.max}
+                  value={values[field.key]}
+                  onChange={(event) => updateField(field.key, toNumber(event.target.value))}
+                />
+              )}
+              {errors[field.key] ? <small className="field-error">{errors[field.key]}</small> : null}
+            </label>
+          );
+        })}
       </div>
       <button className="primary-btn" type="submit" disabled={!canSubmit || loading}>
         Predict Churn

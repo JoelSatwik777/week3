@@ -15,11 +15,22 @@ class Settings:
     ollama_model: str
     llm_timeout_seconds: int
     llm_max_chars: int
+    llm_num_predict: int  # max tokens to generate; lower = faster on CPU
+    llm_num_ctx: int  # context size; lower = faster and less RAM on CPU
     cors_origins: list[str]
 
 
 def _get_cors_origins() -> list[str]:
-    raw = os.getenv('CORS_ORIGINS', 'http://localhost:5173,http://127.0.0.1:5173')
+    # development builds sometimes run on 5173 or 5174 depending on the
+    # framework version.  By default we permit both ports so the frontend
+    # can communicate without requiring a manual environment tweak.  In a
+    # production deployment you should explicitly set `CORS_ORIGINS` to the
+    # correct hostnames for security.
+    raw = os.getenv(
+        'CORS_ORIGINS',
+        'http://localhost:5173,http://127.0.0.1:5173,'
+        'http://localhost:5174,http://127.0.0.1:5174',
+    )
     return [item.strip() for item in raw.split(',') if item.strip()]
 
 
@@ -35,9 +46,18 @@ def get_settings() -> Settings:
             os.getenv('BATCH_OUTPUT_DIR', str(root / 'backend' / 'storage' / 'batch_outputs'))
         ),
         ollama_base_url=os.getenv('OLLAMA_BASE_URL', 'http://127.0.0.1:11434'),
-        ollama_model=os.getenv('OLLAMA_MODEL', 'llama3'),
-        llm_timeout_seconds=int(os.getenv('LLM_TIMEOUT_SECONDS', '90')),
-        llm_max_chars=int(os.getenv('LLM_MAX_CHARS', '1800')),
+        ollama_model=os.getenv('OLLAMA_MODEL', 'llama3.2:3b'),  # CPU-friendly; use 1b for even faster
+        llm_timeout_seconds=int(os.getenv('LLM_TIMEOUT_SECONDS', '60')),
+        # default increased so that short portfolio summaries /
+        # recommendation lists are unlikely to be clipped.  Users can still
+        # override with the LLM_MAX_CHARS env var if they need a tighter cap.
+        llm_max_chars=int(os.getenv('LLM_MAX_CHARS', '2000')),
+        # num_predict controls how many tokens the model may generate.  The
+        # default of 100 sometimes cuts off long executive summaries or lists;
+        # bump to 200 so there's ample headroom.  Override with the
+        # LLM_NUM_PREDICT environment variable if you need even more.
+        llm_num_predict=int(os.getenv('LLM_NUM_PREDICT', '200')),
+        llm_num_ctx=int(os.getenv('LLM_NUM_CTX', '2048')),  # smaller context = faster on CPU
         cors_origins=_get_cors_origins(),
     )
     os.makedirs(settings.batch_output_dir, exist_ok=True)

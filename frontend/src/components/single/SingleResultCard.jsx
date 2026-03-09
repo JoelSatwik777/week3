@@ -1,3 +1,6 @@
+import { useState } from 'react';
+import { fetchRetentionMessage } from '../../api/client';
+
 function riskClass(riskLevel) {
   if (riskLevel === 'High') return 'risk-badge high';
   if (riskLevel === 'Medium') return 'risk-badge medium';
@@ -43,7 +46,26 @@ function renderAdvisory(text) {
   );
 }
 
-function SingleResultCard({ result }) {
+function SingleResultCard({ result, lastSubmittedCustomer }) {
+  const [retentionMessage, setRetentionMessage] = useState(null);
+  const [retentionLoading, setRetentionLoading] = useState(false);
+  const [retentionError, setRetentionError] = useState('');
+
+  const handleGenerateRetentionMessage = async () => {
+    if (!result || !lastSubmittedCustomer) return;
+    setRetentionError('');
+    setRetentionLoading(true);
+    try {
+      const data = await fetchRetentionMessage(lastSubmittedCustomer, result);
+      setRetentionMessage(data.retention_message);
+    } catch (err) {
+      setRetentionMessage(null);
+      setRetentionError(err.message || 'Failed to generate message.');
+    } finally {
+      setRetentionLoading(false);
+    }
+  };
+
   if (!result) return null;
 
   const probabilityPercent = Math.round((result.churn_probability || 0) * 1000) / 10;
@@ -78,6 +100,26 @@ function SingleResultCard({ result }) {
           <h3>AI Advisory Report</h3>
           {renderAdvisory(result.ai_advisory_report)}
         </article>
+      </div>
+
+      <div className="retention-message-section">
+        <div className="retention-message-header">
+          <h3>Retention message</h3>
+          <button
+            type="button"
+            className="secondary-btn retention-message-btn"
+            onClick={handleGenerateRetentionMessage}
+            disabled={retentionLoading || !lastSubmittedCustomer}
+          >
+            {retentionLoading ? 'Generating…' : 'Generate retention message'}
+          </button>
+        </div>
+        {retentionError ? <p className="panel-error">{retentionError}</p> : null}
+        {retentionMessage ? (
+          <div className="retention-message-card">
+            <p className="retention-message-text">{retentionMessage}</p>
+          </div>
+        ) : null}
       </div>
     </section>
   );

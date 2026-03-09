@@ -11,6 +11,7 @@ function App() {
   const [theme, setTheme] = useState('light');
   const [mode, setMode] = useState('single');
   const [singleResult, setSingleResult] = useState(null);
+  const [lastSubmittedCustomer, setLastSubmittedCustomer] = useState(null);
   const [singleError, setSingleError] = useState('');
   const [loadingSingle, setLoadingSingle] = useState(false);
 
@@ -28,22 +29,35 @@ function App() {
       <main className="app-main">
         <ModeToggle mode={mode} onChange={setMode} />
 
-        {mode === 'single' ? (
-          <section className="panel-enter">
-            <SinglePredictionForm
-              onResult={setSingleResult}
-              onError={setSingleError}
-              loading={loadingSingle}
-              setLoading={setLoadingSingle}
-            />
-            {singleError ? <p className="panel-error">{singleError}</p> : null}
-            <SingleResultCard result={singleResult} />
-          </section>
-        ) : (
-          <section className="panel-enter">
-            <PortfolioUpload />
-          </section>
-        )}
+        <section
+          className={
+            mode === 'single'
+              ? 'panel-enter mode-panel mode-panel-visible'
+              : 'panel-enter mode-panel mode-panel-hidden'
+          }
+        >
+          <SinglePredictionForm
+            onResult={(result, customer) => {
+              setSingleResult(result);
+              setLastSubmittedCustomer(customer ?? null);
+            }}
+            onError={setSingleError}
+            loading={loadingSingle}
+            setLoading={setLoadingSingle}
+          />
+          {singleError ? <p className="panel-error">{singleError}</p> : null}
+          <SingleResultCard result={singleResult} lastSubmittedCustomer={lastSubmittedCustomer} />
+        </section>
+
+        <section
+          className={
+            mode === 'batch'
+              ? 'panel-enter mode-panel mode-panel-visible'
+              : 'panel-enter mode-panel mode-panel-hidden'
+          }
+        >
+          <PortfolioUpload />
+        </section>
       </main>
     </div>
   );

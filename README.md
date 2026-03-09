@@ -70,8 +70,8 @@ Download endpoint:
    - `pip install -r requirements.txt`
 3. Install frontend dependencies:
    - `cd frontend && npm install`
-4. Optional LLM setup:
-   - `ollama pull llama3`
+4. Optional LLM setup (CPU-friendly small model for faster summaries):
+   - `ollama pull llama3.2:3b`
    - `ollama serve`
 
 ## Run
@@ -87,8 +87,19 @@ Download endpoint:
 Copy `.env.example` to `.env` and adjust values as needed:
 - app metadata and logging
 - model and storage paths
-- Ollama endpoint/model/timeout
-- CORS origins
+- Ollama endpoint/model/timeout and CPU-tuning (LLM_NUM_PREDICT, LLM_NUM_CTX)
+- Maximum number of characters allowed for LLM responses (LLM_MAX_CHARS).  If you find that the “Recommendations to reduce churn” or executive summary are getting cut off, bump this value or remove the limit completely.
+- CORS origins (defaults to localhost ports 5173 and 5174 for front‑end development; override with `CORS_ORIGINS` if you host the frontend elsewhere)
+
+### LLM tuning
+
+* `LLM_MAX_CHARS` – maximum number of characters kept from a response (default 2000).  Raise if you notice truncation in the AI summary or executive note.  Lower for tighter CPU control.
+* `LLM_NUM_PREDICT` – maximum number of tokens the model may generate (default 200).  If the executive summary ends mid‑sentence or you only get 1‑2 of the requested
+  sentences, increase this value rather than switching models.  Larger models may
+  require a higher token limit to produce more verbose output.
+* `OLLAMA_MODEL` – you can certainly try a different model for quality; however,
+  the symptoms described (half‑generated content, trailing commas) are usually
+  due to token/char limits or the prompt itself, not the model size.
 
 ## Docker Readiness
 
@@ -100,3 +111,4 @@ Copy `.env.example` to `.env` and adjust values as needed:
 - ML model decides churn probability.
 - LLM only explains and recommends retention actions.
 - If Ollama is down/timed out, API returns safe advisory fallback text.
+- Default LLM is `llama3.2:3b` (CPU-friendly). Set `OLLAMA_MODEL=llama3.2:1b` in `.env` for even faster runs.
