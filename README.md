@@ -6,6 +6,16 @@ Production-style hybrid AI churn platform with:
 - Scikit-learn ML inference pipeline
 - Ollama/Llama3 advisory generation (explanatory only)
 - Single and batch portfolio prediction modes
+- **Multi-turn conversation** for follow-up questions on AI advisories
+
+## Features
+
+- **Single Customer Prediction**: Assess individual customer churn risk with ML probability, risk level, retention suggestions, and AI advisory report.
+- **Batch Portfolio Processing**: Upload CSV/XLSX files for bulk predictions, with analytics, charts, and downloadable results.
+- **AI Advisory Reports**: Contextual explanations and recommendations using Ollama/Llama3.
+- **Multi-Turn Conversations**: Ask follow-up questions on single customer advisories for deeper insights (up to 5 exchanges per session).
+- **Retention Messaging**: Generate personalized email/SMS retention messages.
+- **Portfolio Analytics**: Risk distributions, geography/age/product/credit band breakdowns.
 
 ## Architecture
 
@@ -45,6 +55,18 @@ Response:
 - `risk_level`
 - `retention_suggestions`
 - `ai_advisory_report`
+- `session_id` (for follow-up conversations)
+
+### Follow-up Conversation
+- `POST /follow-up`
+- `POST /api/v1/follow-up`
+
+Request body:
+- `session_id` (from initial prediction)
+- `question` (user's follow-up question)
+
+Response:
+- `advisory` (AI response with conversation context)
 
 ### Batch prediction
 - `POST /predict-batch`
