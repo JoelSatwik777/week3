@@ -139,16 +139,16 @@ function SingleResultCard({ result, lastSubmittedCustomer }) {
           ))}
           {isLoading && <div className="message ai">AI is thinking...</div>}
         </div>
-        {conversation.length < 10 && result.session_id && (
+        {conversation.length < 10 && (
           <div className="follow-up-input">
             <input
               type="text"
               value={followUpQuestion}
               onChange={(e) => setFollowUpQuestion(e.target.value)}
-              placeholder="Ask a follow-up question..."
-              disabled={isLoading}
+              placeholder={result.session_id ? "Ask a follow-up question..." : "Session unavailable — run a prediction first"}
+              disabled={isLoading || !result.session_id}
             />
-            <button onClick={handleFollowUp} disabled={isLoading || !followUpQuestion.trim()}>
+            <button onClick={handleFollowUp} disabled={isLoading || !followUpQuestion.trim() || !result.session_id}>
               Ask
             </button>
           </div>
